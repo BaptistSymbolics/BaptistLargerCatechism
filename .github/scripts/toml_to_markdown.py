@@ -15,7 +15,7 @@ def process_question(question_data):
     sections = question_data.get('sections', [])
     
     # Start with the question in header format with 'Q.' prefix
-    markdown = f"# Q. {q_id}: {question_text}\n\n"
+    markdown = f"## Q. {q_id}: {question_text}\n\n"
     
     # Begin the answer with 'A:' prefix
     markdown += "A: "
@@ -45,7 +45,11 @@ def process_question(question_data):
     
     # Add footnotes in a numbered list
     for number, verses in footnotes:
-        markdown += f"{number}. {verses}\n"
+        if verses.strip():
+            # Create a URL for BibleGateway search
+            encoded_verses = verses.replace(' ', '+').replace(':', '%3A').replace(';', '%3B').replace(',', '%2C')
+            bible_url = f"https://www.biblegateway.com/passage/?search={encoded_verses}&version=ESV"
+            markdown += f"{number}. [{verses}]({bible_url})\n"
     
     markdown += "\n---\n\n"  # Add a separator between questions
     
