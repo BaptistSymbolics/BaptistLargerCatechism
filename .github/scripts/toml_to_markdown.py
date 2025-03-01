@@ -31,7 +31,7 @@ def process_question(question_data):
         
         # Add superscript footnote number to the end of each section text
         if section_text:
-            full_text += f"{section_text}{footnote_counter} "
+            full_text += f"{section_text}^[{footnote_counter}]^ "
             footnotes.append((footnote_counter, section_verses))
             footnote_counter += 1
     
