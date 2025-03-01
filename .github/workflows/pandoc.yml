@@ -39,7 +39,11 @@ jobs:
           \usepackage{xcolor}
           \usepackage{fancyhdr}
           \usepackage{fontspec}
-          \setmainfont{Source Serif Pro}
+          \setmainfont[
+            Path=./fonts/,
+            UprightFont = EBGaramond12-Regular.otf,
+            ItalicFont  = EBGaramond12-Italic.otf
+          ]{EB Garamond}
           \usepackage{setspace}
           \onehalfspacing
           \titleformat{\section}{\LARGE\bfseries\color{black}}{\thesection}{1em}{}
