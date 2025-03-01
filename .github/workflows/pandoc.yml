@@ -27,10 +27,10 @@ jobs:
       - name: Convert TOML to Markdown
         run: python .github/scripts/toml_to_markdown.py
       
-      - name: Check Markdown Content
+      - name: Install fonts and required tools
         run: |
-          echo "First 500 characters of markdown file:"
-          head -c 500 larger-catechism.md
+          sudo apt-get update
+          sudo apt-get install -y fonts-liberation fonts-noto fonts-croscore
       
       - name: Create Pandoc Template
         run: |
@@ -44,7 +44,7 @@ jobs:
           \usepackage{xcolor}
           \usepackage{fancyhdr}
           \usepackage{fontspec}
-          \setmainfont{Liberation Serif}
+          \setmainfont{Noto Serif}
           \usepackage{setspace}
           \onehalfspacing
           \titleformat{\section}{\LARGE\bfseries\color{black}}{\thesection}{1em}{}
