@@ -29,11 +29,16 @@ def process_question(question_data):
         section_text = section.get('text', '')
         section_verses = section.get('verses', '')
         
-        # Add superscript footnote number to the end of each section text
+        # Only add superscript and create footnote if verses exist
         if section_text:
-            full_text += f"{section_text}^[{footnote_counter}]^ "
-            footnotes.append((footnote_counter, section_verses))
-            footnote_counter += 1
+            if section_verses.strip():
+                # Add superscript footnote number to the end of section text
+                full_text += f"{section_text}$^{{{footnote_counter}}}$ "
+                footnotes.append((footnote_counter, section_verses))
+                footnote_counter += 1
+            else:
+                # Just add the text without a footnote if no verses
+                full_text += f"{section_text} "
     
     # Add the complete answer text
     markdown += full_text.strip() + "\n\n"
