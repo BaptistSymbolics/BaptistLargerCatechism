@@ -46,6 +46,11 @@ jobs:
           ]{EB Garamond}
           \usepackage{setspace}
           \onehalfspacing
+          
+          % Define \tightlist command used by pandoc
+          \providecommand{\tightlist}{%
+            \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+          
           \titleformat{\section}{\LARGE\bfseries\color{black}}{\thesection}{1em}{}
           \titleformat{\subsection}{\Large\bfseries\color[RGB]{231, 76, 60}}{\thesubsection}{1em}{}
           \pagestyle{fancy}
