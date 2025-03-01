@@ -44,7 +44,7 @@ jobs:
           \usepackage{xcolor}
           \usepackage{fancyhdr}
           \usepackage{fontspec}
-          \setmainfont{Times New Roman}
+          \setmainfont{DejaVu Serif}
           \usepackage{setspace}
           \onehalfspacing
           \titleformat{\section}{\LARGE\bfseries\color{black}}{\thesection}{1em}{}
@@ -67,7 +67,7 @@ jobs:
           EOL
       
       - name: Convert Markdown to PDF
-        uses: docker://pandoc/extra:3.5
+        uses: docker://pandoc/extra:3.6
         with:
           args: >-
             --standalone
