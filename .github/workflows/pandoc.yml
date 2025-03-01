@@ -27,40 +27,51 @@ jobs:
       - name: Convert TOML to Markdown
         run: python .github/scripts/toml_to_markdown.py
       
+      - name: Check Markdown Content
+        run: |
+          echo "First 500 characters of markdown file:"
+          head -c 500 larger-catechism.md
+      
       - name: Create Pandoc Template
         run: |
-          mkdir -p templates
-          cat > templates/catechism-template.yaml << 'EOL'
-          ---
-          title: "The Baptist Larger Catechism"
-          documentclass: article
-          geometry: "margin=1in"
-          fontsize: 12pt
-          colorlinks: true
-          linkcolor: blue
-          urlcolor: blue
-          header-includes:
-            - \usepackage{titlesec}
-            - \usepackage{xcolor}
-            - \usepackage{fancyhdr}
-            - \usepackage{fontspec}
-            - \setmainfont{Times New Roman}
-            - \usepackage{setspace}
-            - \onehalfspacing
-            - \titleformat{\section}{\LARGE\bfseries\color{black}}{\thesection}{1em}{}
-            - \titleformat{\subsection}{\Large\bfseries\color[RGB]{231, 76, 60}}{\thesubsection}{1em}{}
-            - \pagestyle{fancy}
-            - \fancyhead[R]{The Larger Catechism}
-            - \fancyhead[L]{\thepage}
-            - \fancyfoot{}
-          ---
+          cat > template.tex << 'EOL'
+          \documentclass[12pt,article]{article}
+          \usepackage{geometry}
+          \geometry{margin=1in}
+          \usepackage{hyperref}
+          \hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue}
+          \usepackage{titlesec}
+          \usepackage{xcolor}
+          \usepackage{fancyhdr}
+          \usepackage{fontspec}
+          \setmainfont{Times New Roman}
+          \usepackage{setspace}
+          \onehalfspacing
+          \titleformat{\section}{\LARGE\bfseries\color{black}}{\thesection}{1em}{}
+          \titleformat{\subsection}{\Large\bfseries\color[RGB]{231, 76, 60}}{\thesubsection}{1em}{}
+          \pagestyle{fancy}
+          \fancyhead[R]{The Baptist Larger Catechism}
+          \fancyhead[L]{\thepage}
+          \fancyfoot{}
+          
+          \begin{document}
+          
+          \title{The Baptist Larger Catechism}
+          \maketitle
+          \tableofcontents
+          \newpage
+          
+          $body$
+          
+          \end{document}
           EOL
       
       - name: Convert Markdown to PDF
         uses: docker://pandoc/latex:3.5
         with:
           args: >-
-            --template=templates/catechism-template.yaml
+            --standalone
+            --template=template.tex
             --from=markdown
             --to=pdf
             --output=larger-catechism.pdf
