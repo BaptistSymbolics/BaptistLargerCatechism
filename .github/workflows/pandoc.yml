@@ -44,7 +44,7 @@ jobs:
           \usepackage{xcolor}
           \usepackage{fancyhdr}
           \usepackage{fontspec}
-          \setmainfont{DejaVu Serif}
+          \setmainfont{Liberation Serif}
           \usepackage{setspace}
           \onehalfspacing
           \titleformat{\section}{\LARGE\bfseries\color{black}}{\thesection}{1em}{}
