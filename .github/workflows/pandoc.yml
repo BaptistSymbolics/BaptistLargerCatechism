@@ -67,7 +67,7 @@ jobs:
           EOL
       
       - name: Convert Markdown to PDF
-        uses: docker://pandoc/latex:3.5
+        uses: docker://pandoc/extra:3.5
         with:
           args: >-
             --standalone
