@@ -1,0 +1,44 @@
+\documentclass[12pt,article]{article}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue}
+\usepackage{titlesec}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{fontspec}
+\setmainfont[
+  Path=./fonts/,
+  UprightFont = EBGaramond12-Regular.otf,
+  ItalicFont  = EBGaramond12-Italic.otf
+]{EB Garamond}
+\usepackage{setspace}
+\onehalfspacing
+
+% Define \tightlist command used by pandoc
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+% Remove section numbering
+\setcounter{secnumdepth}{0}
+
+% Format section headings (questions)
+\titleformat{\section}{\LARGE\bfseries\color[RGB]{231, 76, 60}}{\thesection}{1em}{}
+\titleformat{\subsection}{\Large\bfseries\color{black}}{\thesubsection}{1em}{}
+
+% Setup page headers and footers
+\pagestyle{fancy}
+\fancyhead[R]{The Baptist Larger Catechism}
+\fancyhead[L]{\thepage}
+\fancyfoot{}
+
+\begin{document}
+
+\title{The Baptist Larger Catechism}
+\maketitle
+\tableofcontents
+\newpage
+
+$body$
+
+\end{document}

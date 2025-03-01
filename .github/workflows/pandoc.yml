@@ -27,55 +27,12 @@ jobs:
       - name: Convert TOML to Markdown
         run: python .github/scripts/toml_to_markdown.py
       
-      - name: Create Pandoc Template
-        run: |
-          cat > template.tex << 'EOL'
-          \documentclass[12pt,article]{article}
-          \usepackage{geometry}
-          \geometry{margin=1in}
-          \usepackage{hyperref}
-          \hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue}
-          \usepackage{titlesec}
-          \usepackage{xcolor}
-          \usepackage{fancyhdr}
-          \usepackage{fontspec}
-          \setmainfont[
-            Path=./fonts/,
-            UprightFont = EBGaramond12-Regular.otf,
-            ItalicFont  = EBGaramond12-Italic.otf
-          ]{EB Garamond}
-          \usepackage{setspace}
-          \onehalfspacing
-          
-          % Define \tightlist command used by pandoc
-          \providecommand{\tightlist}{%
-            \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-          
-          \titleformat{\section}{\LARGE\bfseries\color{black}}{\thesection}{1em}{}
-          \titleformat{\subsection}{\Large\bfseries\color[RGB]{231, 76, 60}}{\thesubsection}{1em}{}
-          \pagestyle{fancy}
-          \fancyhead[R]{The Baptist Larger Catechism}
-          \fancyhead[L]{\thepage}
-          \fancyfoot{}
-          
-          \begin{document}
-          
-          \title{The Baptist Larger Catechism}
-          \maketitle
-          \tableofcontents
-          \newpage
-          
-          $body$
-          
-          \end{document}
-          EOL
-      
       - name: Convert Markdown to PDF
         uses: docker://pandoc/extra:3.6
         with:
           args: >-
             --standalone
-            --template=template.tex
+            --template=templates/letter-pdf.tex
             --from=markdown
             --to=pdf
             --pdf-engine=xelatex
