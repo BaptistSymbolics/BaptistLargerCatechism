@@ -63,13 +63,13 @@ jobs:
         run: pandoc -f markdown --template=templates/catechism-template.yaml -t pdf larger-catechism.md -o larger-catechism.pdf
       
       - name: Upload Markdown artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: larger-catechism-markdown
           path: larger-catechism.md
       
       - name: Upload PDF artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: larger-catechism-pdf
           path: larger-catechism.pdf
