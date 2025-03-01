@@ -1,0 +1,75 @@
+name: TOML to Markdown and PDF
+
+on:
+  push:
+    paths:
+      - 'src/*.toml'
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install toml markdown pandoc-core
+          sudo apt-get update
+          sudo apt-get install -y pandoc texlive-latex-base texlive-fonts-recommended texlive-fonts-extra texlive-latex-extra
+          sudo apt-get install -y texlive-xetex fonts-freefont-otf
+      
+      - name: Convert TOML to Markdown
+        run: python .github/scripts/toml_to_markdown.py
+      
+      - name: Create Pandoc Template
+        run: |
+          mkdir -p templates
+          cat > templates/catechism-template.yaml << 'EOL'
+          ---
+          title: "The Baptist Larger Catechism"
+          documentclass: article
+          geometry: "margin=1in"
+          fontsize: 12pt
+          colorlinks: true
+          linkcolor: blue
+          urlcolor: blue
+          header-includes:
+            - \usepackage{titlesec}
+            - \usepackage{xcolor}
+            - \usepackage{fancyhdr}
+            - \usepackage{fontspec}
+            - \setmainfont{Times New Roman}
+            - \usepackage{setspace}
+            - \onehalfspacing
+            - \titleformat{\section}{\LARGE\bfseries\color{black}}{\thesection}{1em}{}
+            - \titleformat{\subsection}{\Large\bfseries\color[RGB]{231, 76, 60}}{\thesubsection}{1em}{}
+            - \pagestyle{fancy}
+            - \fancyhead[R]{The Larger Catechism}
+            - \fancyhead[L]{\thepage}
+            - \fancyfoot{}
+          ---
+          EOL
+      
+      - name: Convert Markdown to PDF
+        run: pandoc -f markdown --template=templates/catechism-template.yaml -t pdf larger-catechism.md -o larger-catechism.pdf
+      
+      - name: Upload Markdown artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: larger-catechism-markdown
+          path: larger-catechism.md
+      
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: larger-catechism-pdf
+          path: larger-catechism.pdf
