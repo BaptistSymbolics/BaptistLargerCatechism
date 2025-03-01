@@ -74,6 +74,7 @@ jobs:
             --template=template.tex
             --from=markdown
             --to=pdf
+            --pdf-engine=xelatex
             --output=larger-catechism.pdf
             larger-catechism.md
       
