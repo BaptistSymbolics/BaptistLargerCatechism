@@ -15,7 +15,7 @@ def process_question(question_data):
     sections = question_data.get('sections', [])
     
     # Start with the question in header format with 'Q.' prefix
-    markdown = f"## Q. {q_id}: {question_text}\n\n"
+    markdown = f"# Q. {q_id}: {question_text}\n\n"
     
     # Begin the answer with 'A:' prefix
     markdown += "A: "
