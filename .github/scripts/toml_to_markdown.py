@@ -8,39 +8,40 @@ import re
 import glob
 from collections import OrderedDict
 
-def format_verse_references(verses):
-    """Format verse references into an appropriate table based on reference count."""
-    if not verses:
-        return ""
+def format_verse_references(verses_list):
+    """Format all verse references into a single table based on total reference count."""
+    # Flatten all verse references
+    all_refs = []
+    for verses in verses_list:
+        if verses:
+            all_refs.extend([ref.strip() for ref in verses.split(';')])
     
-    # Split references
-    refs = [ref.strip() for ref in verses.split(';')]
+    # If few references, return without a table
+    if len(all_refs) < 6:
+        return None
     
-    # Determine if we need a table and how many columns
-    if len(refs) < 6:
-        # Return references without a table
-        return verses
-    elif len(refs) <= 15:
+    # Determine column count
+    if len(all_refs) <= 15:
         cols = 2
-    elif len(refs) <= 25:
+    elif len(all_refs) <= 25:
         cols = 3
     else:
         cols = 4
     
-    # Calculate rows needed (column-first distribution)
-    rows = (len(refs) + cols - 1) // cols
+    # Calculate rows needed
+    rows = (len(all_refs) + cols - 1) // cols
     
     # Build table
     table = "| " + " | ".join(["References"] * cols) + " |\n"
     table += "| " + " | ".join(["---"] * cols) + " |\n"
     
-    # Fill table with references, distributing down columns
+    # Fill table with references
     for i in range(rows):
         row_cells = []
         for j in range(cols):
             idx = i + j * rows
-            if idx < len(refs):
-                row_cells.append(refs[idx])
+            if idx < len(all_refs):
+                row_cells.append(all_refs[idx])
             else:
                 row_cells.append("")
         table += "| " + " | ".join(row_cells) + " |\n"
@@ -63,6 +64,7 @@ def process_question(question_data):
     full_text = ""
     footnote_counter = 1
     footnotes = []
+    all_verses = []
     
     for section in sections:
         section_text = section.get('text', '')
@@ -74,6 +76,7 @@ def process_question(question_data):
                 # Add superscript footnote number to the end of section text
                 full_text += f"{section_text}$^{{{footnote_counter}}}$ "
                 footnotes.append((footnote_counter, section_verses))
+                all_verses.append(section_verses)
                 footnote_counter += 1
             else:
                 # Just add the text without a footnote if no verses
@@ -82,22 +85,23 @@ def process_question(question_data):
     # Add the complete answer text
     markdown += full_text.strip() + "\n\n"
     
-    # Add footnotes in a numbered list with tables where appropriate
+    # Create table for all verse references if needed
+    verse_table = format_verse_references(all_verses)
+    
+    # Add footnotes in a numbered list
     for number, verses in footnotes:
         if verses.strip():
-            # Format verses as tables for references with many entries
-            formatted_verses = format_verse_references(verses)
-            
             # Create a URL for BibleGateway search
             encoded_verses = verses.replace(' ', '+').replace(':', '%3A').replace(';', '%3B').replace(',', '%2C')
             bible_url = f"https://www.biblegateway.com/passage/?search={encoded_verses}&version=ESV"
             
-            # Add the footnote
-            markdown += f"{number}. [See verses]({bible_url})\n"
-            if formatted_verses != verses:  # If it's a table
-                markdown += formatted_verses + "\n"
-            else:  # If it's just plain text
-                markdown += f"   {formatted_verses}\n"
+            # Make the verses themselves the hyperlink
+            markdown += f"{number}. [{verses}]({bible_url})\n"
+    
+    # Add the table of all verse references if applicable
+    if verse_table:
+        markdown += "\n**All Scripture References:**\n\n"
+        markdown += verse_table
     
     markdown += "\n---\n\n"  # Add a separator between questions
     
