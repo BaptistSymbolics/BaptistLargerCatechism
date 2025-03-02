@@ -7,6 +7,7 @@
 \usepackage{xcolor}
 \usepackage{fancyhdr}
 \usepackage{fontspec}
+\usepackage{needspace}
 \setmainfont[
   Path=./fonts/,
   UprightFont = EBGaramond12-Regular.otf,
@@ -22,9 +23,21 @@
 % Remove section numbering
 \setcounter{secnumdepth}{0}
 
-% Format section headings (questions)
-\titleformat{\section}{\LARGE\bfseries\color[RGB]{231, 76, 60}}{\thesection}{1em}{}
+% Format section headings (questions) and prevent page breaks
+\titleformat{\section}{\needspace{4\baselineskip}\LARGE\bfseries\color[RGB]{231, 76, 60}}{\thesection}{1em}{}
+\titlespacing{\section}{0pt}{*2}{*0.5}
 \titleformat{\subsection}{\Large\bfseries\color{black}}{\thesubsection}{1em}{}
+
+% Prevent page breaks within questions by redefining section command
+\let\oldsection\section
+\renewcommand{\section}[1]{%
+  \begin{samepage}%
+  \oldsection{#1}%
+  }
+
+% Command to end samepage environment at start of next section
+\newcommand{\endsectionsamepage}{\end{samepage}}
+\preto{\section}{\ifhmode\endsectionsamepage\fi}
 
 % Setup page headers and footers
 \pagestyle{fancy}
@@ -40,5 +53,8 @@
 \newpage
 
 $body$
+
+% Close final samepage environment
+\endsectionsamepage
 
 \end{document}
