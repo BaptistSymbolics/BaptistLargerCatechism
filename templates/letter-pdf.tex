@@ -7,8 +7,6 @@
 \usepackage{xcolor}
 \usepackage{fancyhdr}
 \usepackage{fontspec}
-\usepackage{multicol}
-
 \setmainfont[
   Path=./fonts/,
   UprightFont = EBGaramond12-Regular.otf,
@@ -23,13 +21,6 @@
 
 % Remove section numbering
 \setcounter{secnumdepth}{0}
-
-% Custom command for verse references in two columns
-\newcommand{\verserefs}[1]{%
-  \begin{multicols}{2}
-    \small #1
-  \end{multicols}
-}
 
 % Format section headings (questions)
 \titleformat{\section}{\LARGE\bfseries\color[RGB]{231, 76, 60}}{\thesection}{1em}{}
