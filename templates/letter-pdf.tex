@@ -9,6 +9,7 @@
 \usepackage{fontspec}
 \usepackage{needspace}
 \usepackage{multicol}
+\usepackage{etoolbox}
 \usepackage{xparse}
 
 \setmainfont[
@@ -27,9 +28,10 @@
 \setcounter{secnumdepth}{0}
 
 % Custom command for verse references that wraps to 2 columns if references contain more than X semicolons
+\newcounter{tempcount}
 \NewDocumentCommand{\verserefs}{m}{%
-  \def\tempcount{0}%
-  \foreach \x in {#1}{\ifx\x;\addtocounter{tempcount}{1}\fi}%
+  \setcounter{tempcount}{0}%
+  \foreach \x in {#1}{\ifx\x;\stepcounter{tempcount}\fi}%
   \ifnum\value{tempcount}>10
     \begin{multicols}{2}
       \small #1
@@ -46,14 +48,12 @@
 
 % Prevent page breaks within questions
 \let\oldsection\section
+\newcommand{\closesectionsamepage}{\ifhmode\end{samepage}\fi}
 \renewcommand{\section}[1]{%
+  \closesectionsamepage
   \begin{samepage}%
   \oldsection{#1}%
   }
-
-% Command to end samepage environment at start of next section
-\newcommand{\endsectionsamepage}{\end{samepage}}
-\preto{\section}{\ifhmode\endsectionsamepage\fi}
 
 % Setup page headers and footers
 \pagestyle{fancy}
@@ -71,6 +71,6 @@
 $body$
 
 % Close final samepage environment
-\endsectionsamepage
+\closesectionsamepage
 
 \end{document}
