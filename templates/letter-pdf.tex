@@ -8,6 +8,9 @@
 \usepackage{fancyhdr}
 \usepackage{fontspec}
 \usepackage{needspace}
+\usepackage{multicol}
+\usepackage{xparse}
+
 \setmainfont[
   Path=./fonts/,
   UprightFont = EBGaramond12-Regular.otf,
@@ -23,12 +26,25 @@
 % Remove section numbering
 \setcounter{secnumdepth}{0}
 
+% Custom command for verse references that wraps to 2 columns if references contain more than X semicolons
+\NewDocumentCommand{\verserefs}{m}{%
+  \def\tempcount{0}%
+  \foreach \x in {#1}{\ifx\x;\addtocounter{tempcount}{1}\fi}%
+  \ifnum\value{tempcount}>10
+    \begin{multicols}{2}
+      \small #1
+    \end{multicols}
+  \else
+    \small #1
+  \fi
+}
+
 % Format section headings (questions) and prevent page breaks
 \titleformat{\section}{\needspace{4\baselineskip}\LARGE\bfseries\color[RGB]{231, 76, 60}}{\thesection}{1em}{}
 \titlespacing{\section}{0pt}{*2}{*0.5}
 \titleformat{\subsection}{\Large\bfseries\color{black}}{\thesubsection}{1em}{}
 
-% Prevent page breaks within questions by redefining section command
+% Prevent page breaks within questions
 \let\oldsection\section
 \renewcommand{\section}[1]{%
   \begin{samepage}%
