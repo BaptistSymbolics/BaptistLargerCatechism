@@ -1,0 +1,32 @@
+id = "180"
+question = "For whom should we pray?"
+[[sections]]
+text = "We should pray for the entire church of Christ on earth,"
+verses = "Ephesians 6:18; Psalm 28:9"
+[[sections]]
+text = "for civil authorities"
+verses = "1 Timothy 2:1-2"
+[[sections]]
+text = "and ministers,"
+verses = "Colossians 4:3; 2 Thessalonians 3:1"
+[[sections]]
+text = "for ourselves"
+verses = "Genesis 32:11"
+[[sections]]
+text = "and fellow believers,"
+verses = "James 5:16"
+[[sections]]
+text = "and for our enemies."
+verses = "Matthew 5:44"
+[[sections]]
+text = "We should pray for all people who are alive,"
+verses = "1 Timothy 2:1-2"
+[[sections]]
+text = "and those who are going to live in the future."
+verses = "John 17:20; 2 Samuel 7:29"
+[[sections]]
+text = "But we should not pray for the dead"
+verses = "2 Samuel 12:21-23"
+[[sections]]
+text = "or for those who are known to have sinned the sin that leads to death."
+verses = "1 John 5:16"
