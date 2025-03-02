@@ -8,6 +8,45 @@ import re
 import glob
 from collections import OrderedDict
 
+def format_verse_references(verses):
+    """Format verse references into an appropriate table based on reference count."""
+    if not verses:
+        return ""
+    
+    # Split references
+    refs = [ref.strip() for ref in verses.split(';')]
+    
+    # Determine if we need a table and how many columns
+    if len(refs) < 6:
+        # Return references without a table
+        return verses
+    elif len(refs) <= 15:
+        cols = 2
+    elif len(refs) <= 25:
+        cols = 3
+    else:
+        cols = 4
+    
+    # Calculate rows needed (column-first distribution)
+    rows = (len(refs) + cols - 1) // cols
+    
+    # Build table
+    table = "| " + " | ".join(["References"] * cols) + " |\n"
+    table += "| " + " | ".join(["---"] * cols) + " |\n"
+    
+    # Fill table with references, distributing down columns
+    for i in range(rows):
+        row_cells = []
+        for j in range(cols):
+            idx = i + j * rows
+            if idx < len(refs):
+                row_cells.append(refs[idx])
+            else:
+                row_cells.append("")
+        table += "| " + " | ".join(row_cells) + " |\n"
+    
+    return table
+
 def process_question(question_data):
     """Process a single question into markdown format."""
     q_id = question_data.get('id', '')
@@ -43,13 +82,22 @@ def process_question(question_data):
     # Add the complete answer text
     markdown += full_text.strip() + "\n\n"
     
-    # Add footnotes in a numbered list
+    # Add footnotes in a numbered list with tables where appropriate
     for number, verses in footnotes:
         if verses.strip():
+            # Format verses as tables for references with many entries
+            formatted_verses = format_verse_references(verses)
+            
             # Create a URL for BibleGateway search
             encoded_verses = verses.replace(' ', '+').replace(':', '%3A').replace(';', '%3B').replace(',', '%2C')
             bible_url = f"https://www.biblegateway.com/passage/?search={encoded_verses}&version=ESV"
-            markdown += f"{number}. [{verses}]({bible_url})\n"
+            
+            # Add the footnote
+            markdown += f"{number}. [See verses]({bible_url})\n"
+            if formatted_verses != verses:  # If it's a table
+                markdown += formatted_verses + "\n"
+            else:  # If it's just plain text
+                markdown += f"   {formatted_verses}\n"
     
     markdown += "\n---\n\n"  # Add a separator between questions
     
