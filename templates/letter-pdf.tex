@@ -27,7 +27,7 @@
 % Remove section numbering
 \setcounter{secnumdepth}{0}
 
-% Custom command for verse references that wraps to 2 columns if references contain more than X semicolons
+% Custom command for verse references that wraps to 2 columns if too long
 \newcounter{tempcount}
 \NewDocumentCommand{\verserefs}{m}{%
   \setcounter{tempcount}{0}%
@@ -41,19 +41,19 @@
   \fi
 }
 
-% Format section headings (questions) and prevent page breaks
+% Format section headings (questions)
 \titleformat{\section}{\needspace{4\baselineskip}\LARGE\bfseries\color[RGB]{231, 76, 60}}{\thesection}{1em}{}
 \titlespacing{\section}{0pt}{*2}{*0.5}
 \titleformat{\subsection}{\Large\bfseries\color{black}}{\thesubsection}{1em}{}
 
-% Prevent page breaks within questions
+% Using a different approach to prevent page breaks within questions
 \let\oldsection\section
-\newcommand{\closesectionsamepage}{\ifhmode\end{samepage}\fi}
 \renewcommand{\section}[1]{%
-  \closesectionsamepage
-  \begin{samepage}%
-  \oldsection{#1}%
-  }
+  \needspace{5\baselineskip}%
+  \pagebreak[3]% Suggest a page break here if convenient
+  \nopagebreak\oldsection{#1}%
+  \nopagebreak% Forbid page breaks after the heading
+}
 
 % Setup page headers and footers
 \pagestyle{fancy}
@@ -69,8 +69,5 @@
 \newpage
 
 $body$
-
-% Close final samepage environment
-\closesectionsamepage
 
 \end{document}
