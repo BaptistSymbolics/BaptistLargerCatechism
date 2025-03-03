@@ -1,5 +1,9 @@
 # Baptist Larger Catechism
 
+## Downloads
+
+[Versioned releases can be found here.](https://github.com/BaptistSymbolics/BaptistLargerCatechism/releases)
+
 ## Project Overview
 
 This project serves as a collaborative, open-source hub for maintaining and preserving the Baptist Larger Catechism. Our goal is to provide a publicly accessible, freely distributable version of this important theological document that can be improved and shared by the community.
