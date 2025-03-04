@@ -20,11 +20,6 @@ def process_question(question_data):
     # Begin the answer with 'A:' prefix
     markdown += "A: "
     
-    # Process all sections to create the full answer text with superscript references
-    full_text = ""
-    footnote_counter = 1
-    footnotes = []
-    
     # Check if first section starts an enumerated list
     is_enum_list = False
     list_item_pattern = re.compile(r'^(\d+)\.\s')
@@ -42,57 +37,102 @@ def process_question(question_data):
     if enum_sections and enum_sections.count(True) >= 3:
         is_enum_list = True
     
-    # Process sections
-    for i, section in enumerate(sections):
-        section_text = section.get('text', '').strip()
-        section_verses = section.get('verses', '')
+    # Process sections differently if it's an enumerated list
+    if is_enum_list:
+        # For enumerated lists, process the non-list part first
+        full_text = ""
+        footnote_counter = 1
+        footnotes = []
         
-        if not section_text:
-            continue
+        # First, handle any text before the enumerated list
+        for section in sections:
+            section_text = section.get('text', '').strip()
+            section_verses = section.get('verses', '')
             
-        # Format enumerated list items
-        if is_enum_list and list_item_pattern.match(section_text):
-            # Extract the number from the start of the text
-            match = list_item_pattern.match(section_text)
-            list_num = match.group(1)
-            
-            # Replace the number at the start with blank for the full text
-            text_without_number = list_item_pattern.sub('', section_text)
-            
-            # Add it as a list item with proper indentation if it's not the first item
-            if full_text:
-                full_text += "\n\n"  # Add spacing before list item
+            if not section_text:
+                continue
                 
-            full_text += f"{list_num}. {text_without_number}"
+            if not list_item_pattern.match(section_text):
+                if section_verses.strip():
+                    full_text += f"{section_text}$^{{{footnote_counter}}}$ "
+                    footnotes.append((footnote_counter, section_verses))
+                    footnote_counter += 1
+                else:
+                    full_text += f"{section_text} "
+        
+        # Add the non-list part
+        if full_text:
+            markdown += full_text.strip() + "\n\n"
+        
+        # Now handle the enumerated list items
+        first_list_item = True
+        for section in sections:
+            section_text = section.get('text', '').strip()
+            section_verses = section.get('verses', '')
             
-            # Add superscript
+            if not section_text:
+                continue
+                
+            if list_item_pattern.match(section_text):
+                match = list_item_pattern.match(section_text)
+                list_num = match.group(1)
+                text_without_number = list_item_pattern.sub('', section_text)
+                
+                # Add the list item
+                if first_list_item:
+                    first_list_item = False
+                else:
+                    markdown += "\n"
+                    
+                # Add the list item with its verse reference
+                if section_verses.strip():
+                    markdown += f"{list_num}. {text_without_number}$^{{{footnote_counter}}}$"
+                    footnotes.append((footnote_counter, section_verses))
+                    footnote_counter += 1
+                else:
+                    markdown += f"{list_num}. {text_without_number}"
+        
+        # Add two newlines after the list
+        markdown += "\n\n"
+                
+        # Add footnotes in a numbered list
+        for number, verses in footnotes:
+            if verses.strip():
+                # Create a URL for BibleGateway search
+                encoded_verses = verses.replace(' ', '+').replace(':', '%3A').replace(';', '%3B').replace(',', '%2C')
+                bible_url = f"https://www.biblegateway.com/passage/?search={encoded_verses}&version=ESV"
+                markdown += f"{number}. [{verses}]({bible_url})\n"
+    
+    else:
+        # Process regular sections (non-enumerated list)
+        full_text = ""
+        footnote_counter = 1
+        footnotes = []
+        
+        for section in sections:
+            section_text = section.get('text', '').strip()
+            section_verses = section.get('verses', '')
+            
+            if not section_text:
+                continue
+                
             if section_verses.strip():
-                full_text += f"$^{{{footnote_counter}}}$"
-                footnotes.append((footnote_counter, section_verses))
-                footnote_counter += 1
-        else:
-            # Process regular sections
-            if section_verses.strip():
-                if full_text:
-                    full_text += " "  # Add space between sections
-                full_text += f"{section_text}$^{{{footnote_counter}}}$"
+                full_text += f"{section_text}$^{{{footnote_counter}}}$ "
                 footnotes.append((footnote_counter, section_verses))
                 footnote_counter += 1
             else:
-                if full_text:
-                    full_text += " "  # Add space between sections
-                full_text += section_text
-    
-    # Add the complete answer text
-    markdown += full_text.strip() + "\n\n"
-    
-    # Add footnotes in a numbered list
-    for number, verses in footnotes:
-        if verses.strip():
-            # Create a URL for BibleGateway search
-            encoded_verses = verses.replace(' ', '+').replace(':', '%3A').replace(';', '%3B').replace(',', '%2C')
-            bible_url = f"https://www.biblegateway.com/passage/?search={encoded_verses}&version=ESV"
-            markdown += f"{number}. [{verses}]({bible_url})\n"
+                full_text += f"{section_text} "
+        
+        # Add the complete answer text
+        markdown += full_text.strip() + "\n\n"
+        
+        # Add footnotes in a numbered list
+        for number, verses in footnotes:
+            if verses.strip():
+                # Create a URL for BibleGateway search
+                encoded_verses = verses.replace(' ', '+').replace(':', '%3A').replace(';', '%3B').replace(',', '%2C')
+                bible_url = f"https://www.biblegateway.com/passage/?search={encoded_verses}&version=ESV"
+                markdown += f"{number}. [{verses}]({bible_url})\n"
     
     markdown += "\n---\n\n"  # Add a separator between questions
     
