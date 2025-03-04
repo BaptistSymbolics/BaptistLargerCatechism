@@ -41,6 +41,8 @@ This project is released under the Creative Commons Zero v1.0 Universal (CC0-1.0
 
 [![License: CC0-1.0](https://licensebuttons.net/l/zero/1.0/80x15.png)](http://creativecommons.org/publicdomain/zero/1.0/)
 
+The original author has released his license, so that the community can own and maintain his creation.
+
 You are free to:
 - Use the document for any purpose
 - Modify and distribute the work
@@ -66,7 +68,7 @@ This project is part of a broader initiative to:
 ## Acknowledgments
 
 Special thanks to:
-- The original contributors of the Baptist Larger Catechism
+- The original creator of the Baptist Larger Catechism: Gabriel Williams
 - The community that has supported and developed this document over time
 
 ## Contact
