@@ -25,20 +25,63 @@ def process_question(question_data):
     footnote_counter = 1
     footnotes = []
     
+    # Check if first section starts an enumerated list
+    is_enum_list = False
+    list_item_pattern = re.compile(r'^(\d+)\.\s')
+    
+    # Count sections that start with a number followed by a period
+    enum_sections = []
     for section in sections:
-        section_text = section.get('text', '')
+        section_text = section.get('text', '').strip()
+        if section_text and list_item_pattern.match(section_text):
+            enum_sections.append(True)
+        elif section_text:
+            enum_sections.append(False)
+    
+    # If a significant portion of non-empty sections start with numbers, treat as enumerated list
+    if enum_sections and enum_sections.count(True) >= 3:
+        is_enum_list = True
+    
+    # Process sections
+    for i, section in enumerate(sections):
+        section_text = section.get('text', '').strip()
         section_verses = section.get('verses', '')
         
-        # Only add superscript and create footnote if verses exist
-        if section_text:
+        if not section_text:
+            continue
+            
+        # Format enumerated list items
+        if is_enum_list and list_item_pattern.match(section_text):
+            # Extract the number from the start of the text
+            match = list_item_pattern.match(section_text)
+            list_num = match.group(1)
+            
+            # Replace the number at the start with blank for the full text
+            text_without_number = list_item_pattern.sub('', section_text)
+            
+            # Add it as a list item with proper indentation if it's not the first item
+            if full_text:
+                full_text += "\n\n"  # Add spacing before list item
+                
+            full_text += f"{list_num}. {text_without_number}"
+            
+            # Add superscript
             if section_verses.strip():
-                # Add superscript footnote number to the end of section text
-                full_text += f"{section_text}$^{{{footnote_counter}}}$ "
+                full_text += f"$^{{{footnote_counter}}}$"
+                footnotes.append((footnote_counter, section_verses))
+                footnote_counter += 1
+        else:
+            # Process regular sections
+            if section_verses.strip():
+                if full_text:
+                    full_text += " "  # Add space between sections
+                full_text += f"{section_text}$^{{{footnote_counter}}}$"
                 footnotes.append((footnote_counter, section_verses))
                 footnote_counter += 1
             else:
-                # Just add the text without a footnote if no verses
-                full_text += f"{section_text} "
+                if full_text:
+                    full_text += " "  # Add space between sections
+                full_text += section_text
     
     # Add the complete answer text
     markdown += full_text.strip() + "\n\n"
