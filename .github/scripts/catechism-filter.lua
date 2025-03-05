@@ -31,8 +31,8 @@ function handle_references(div)
       -- Get the number of columns (default to 2 if not specified)
       local columns = div.attributes.columns or "2"
       
-      -- Extract content
-      local content = pandoc.write(div.content, "latex")
+      -- Extract content - use stringify instead of write
+      local content = pandoc.utils.stringify(div.content)
       
       -- Create custom LaTeX environment with multicols
       local latex = "\\begin{scriptureReferences}{" .. columns .. "}\n" 
