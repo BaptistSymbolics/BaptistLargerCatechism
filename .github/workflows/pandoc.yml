@@ -36,6 +36,7 @@ jobs:
             --from=markdown
             --to=pdf
             --pdf-engine=xelatex
+            --lua-filter=./.github/scripts/catechism-filter.lua
             --output=larger-catechism.pdf
             larger-catechism.md
       

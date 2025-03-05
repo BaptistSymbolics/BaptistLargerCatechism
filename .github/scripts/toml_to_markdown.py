@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Convert catechism TOML files to a formatted Markdown file using functional programming principles.
+Convert catechism TOML files to a formatted Markdown file with section markers for Pandoc processing.
 """
+from __future__ import annotations
 import toml
 import re
 import glob
@@ -96,12 +97,19 @@ def create_bible_url(verses: str) -> str:
     return f"https://www.biblegateway.com/passage/?search={encoded_verses}&version=ESV"
 
 def format_footnotes(footnotes: List[Footnote]) -> str:
-    """Format a list of footnotes as markdown."""
-    markdown = ""
+    """Format a list of footnotes as markdown with special markers for the references section."""
+    if not footnotes:
+        return ""
+        
+    # Add a special div marker for the references section
+    markdown = "\n::: {.scripture-references}\n"
+    
     for footnote in footnotes:
         if footnote.verses:
             bible_url = create_bible_url(footnote.verses)
             markdown += f"{footnote.number}. [{footnote.verses}]({bible_url})\n"
+            
+    markdown += ":::\n"
     return markdown
 
 def format_regular_sections(sections: List[Section]) -> Tuple[str, List[Footnote]]:
@@ -174,8 +182,14 @@ def format_non_list_items(sections: List[Section]) -> Tuple[str, List[Footnote]]
     return full_text.strip(), footnotes
 
 def format_question(question: Question) -> str:
-    """Format a question into markdown."""
-    markdown = f"# Q. {question.id}: {question.question}\n\n"
+    """Format a question into markdown with section markers."""
+    # Question section with a special div marker
+    markdown = f"::: {{.catechism-question}}\n"
+    markdown += f"# Q. {question.id}: {question.question}\n"
+    markdown += ":::\n\n"
+    
+    # Answer section with a special div marker
+    markdown += f"::: {{.catechism-answer}}\n"
     markdown += "A: "
     
     if should_format_as_enumerated_list(question.sections):
@@ -185,14 +199,17 @@ def format_question(question: Question) -> str:
             markdown += intro_text + "\n\n"
         
         if list_text:
-            markdown += list_text + "\n\n"
+            markdown += list_text
     else:
         full_text, footnotes = format_regular_sections(question.sections)
-        markdown += full_text + "\n\n"
+        markdown += full_text
     
-    # Add footnotes
+    markdown += "\n:::\n"
+    
+    # References section
     markdown += format_footnotes(footnotes)
-    markdown += "\n---\n\n"  # Add separator
+    
+    markdown += "\n---\n\n"  # Add separator between questions
     
     return markdown
 
@@ -221,7 +238,10 @@ def process_files(file_paths: List[str]) -> OrderedDict[str, Question]:
 
 def generate_markdown(questions: OrderedDict[str, Question]) -> str:
     """Generate complete markdown content from questions."""
-    markdown = "# The Larger Catechism\n\n"
+    markdown = "---\n"
+    markdown += "title: The Baptist Larger Catechism\n"
+    markdown += "---\n\n"
+    markdown += "# The Baptist Larger Catechism\n\n"
     
     for question in questions.values():
         markdown += format_question(question)

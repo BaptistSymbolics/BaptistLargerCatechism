@@ -14,6 +14,7 @@
 ]{EB Garamond}
 \usepackage{setspace}
 \onehalfspacing
+\usepackage{mdframed}
 
 % Define \tightlist command used by pandoc
 \providecommand{\tightlist}{%
@@ -31,6 +32,34 @@
 \fancyhead[R]{The Baptist Larger Catechism}
 \fancyhead[L]{\thepage}
 \fancyfoot{}
+
+% Define custom environments for catechism elements
+\newenvironment{catechismQuestion}{%
+  \begin{spacing}{1.0}%
+  \color[RGB]{231, 76, 60}%
+  \Large\bfseries%
+}{%
+  \end{spacing}%
+}
+
+\newenvironment{catechismAnswer}{%
+  \begin{spacing}{1.2}%
+  \normalsize%
+}{%
+  \end{spacing}%
+}
+
+\newenvironment{scriptureReferences}{%
+  \vspace{1em}%
+  \begin{mdframed}[linecolor=blue!20,backgroundcolor=blue!5,linewidth=1pt,skipabove=10pt,skipbelow=10pt]%
+  \begin{spacing}{1.0}%
+  \footnotesize\color[RGB]{0, 0, 150}%
+  \setlength{\parskip}{0.5em}%
+}{%
+  \end{spacing}%
+  \end{mdframed}%
+  \vspace{1em}%
+}
 
 \begin{document}
 
