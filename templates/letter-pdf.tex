@@ -16,6 +16,7 @@
 \onehalfspacing
 \usepackage{mdframed}
 \usepackage{fixltx2e}
+\usepackage{multicol}
 
 % Define \tightlist command used by pandoc
 \providecommand{\tightlist}{%
@@ -50,14 +51,17 @@
   \end{spacing}%
 }
 
-\newenvironment{scriptureReferences}{%
+% Define custom environment for scripture references with columns
+\newenvironment{scriptureReferences}[1]{%
   \vspace{1em}%
   \begin{mdframed}[linecolor=blue!20,backgroundcolor=blue!5,linewidth=1pt,skipabove=10pt,skipbelow=10pt]%
+  \begin{multicols}{#1}%
   \begin{spacing}{1.0}%
   \footnotesize\color[RGB]{0, 0, 150}%
   \setlength{\parskip}{0.5em}%
 }{%
   \end{spacing}%
+  \end{multicols}%
   \end{mdframed}%
   \vspace{1em}%
 }

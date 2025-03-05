@@ -101,13 +101,14 @@ def format_footnotes(footnotes: List[Footnote]) -> str:
     if not footnotes:
         return ""
         
-    # Add a special div marker for the references section
-    markdown = "\n::: {.scripture-references}\n"
+    # Add a special div marker for the references section with columns attribute
+    markdown = "\n::: {.scripture-references columns=2}\n"
     
     for footnote in footnotes:
         if footnote.verses:
             bible_url = create_bible_url(footnote.verses)
-            markdown += f"{footnote.number}. [{footnote.verses}]({bible_url})\n"
+            # We're removing the numbers since we don't have superscripts anymore
+            markdown += f"[{footnote.verses}]({bible_url})\n"
             
     markdown += ":::\n"
     return markdown
@@ -123,7 +124,8 @@ def format_regular_sections(sections: List[Section]) -> Tuple[str, List[Footnote
             continue
             
         if section.verses:
-            full_text += f"{section.text}\\textsuperscript{{{footnote_counter}}} "
+            # Remove the superscript reference
+            full_text += f"{section.text} "
             footnotes.append(Footnote(footnote_counter, section.verses))
             footnote_counter += 1
         else:
