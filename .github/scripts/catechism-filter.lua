@@ -24,30 +24,26 @@ function handle_question(div)
       return pandoc.RawBlock("latex", latex)
     end
   end
-  
--- Function to handle the scripture references divs
-function handle_references(div)
+
+  function handle_references(div)
     if div.classes:includes("scripture-references") then
-      -- Get the number of columns (default to 2 if not specified)
+      -- Get the number of columns
       local columns = div.attributes.columns or "2"
       
-      -- Extract content - use stringify instead of write
-      local content = pandoc.utils.stringify(div.content)
+      -- Extract content as a string but preserve links
+      local content = ""
+      for _, block in ipairs(div.content) do
+        if block.t == "Para" or block.t == "Plain" then
+          local text = pandoc.utils.stringify(block.content)
+          content = content .. text .. "\n"
+        end
+      end
       
       -- Create custom LaTeX environment with multicols
       local latex = "\\begin{scriptureReferences}{" .. columns .. "}\n" 
                     .. content 
                     .. "\n\\end{scriptureReferences}"
       
-      -- Return raw LaTeX block
       return pandoc.RawBlock("latex", latex)
     end
   end
-  
-  -- Return the filter as a list of element handlers
-  return {
-    Div = function(div)
-      -- Try each handler in sequence
-      return handle_question(div) or handle_answer(div) or handle_references(div) or div
-    end
-  }

@@ -17,6 +17,7 @@
 \usepackage{mdframed}
 \usepackage{fixltx2e}
 \usepackage{multicol}
+\usepackage{tocloft}
 
 % Define \tightlist command used by pandoc
 \providecommand{\tightlist}{%
@@ -24,6 +25,7 @@
 
 % Remove section numbering
 \setcounter{secnumdepth}{0}
+\setcounter{tocdepth}{1}  % Show only section-level entries in TOC
 
 % Format section headings (questions)
 \titleformat{\section}{\LARGE\bfseries\color[RGB]{231, 76, 60}}{\thesection}{1em}{}

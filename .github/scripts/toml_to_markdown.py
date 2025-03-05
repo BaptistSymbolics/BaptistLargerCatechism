@@ -124,8 +124,8 @@ def format_regular_sections(sections: List[Section]) -> Tuple[str, List[Footnote
             continue
             
         if section.verses:
-            # Remove the superscript reference
-            full_text += f"{section.text} "
+            # Add a simple bracketed footnote reference
+            full_text += f"{section.text} [{footnote_counter}] "
             footnotes.append(Footnote(footnote_counter, section.verses))
             footnote_counter += 1
         else:
@@ -156,7 +156,7 @@ def format_enumerated_list(sections: List[Section]) -> Tuple[str, str, List[Foot
         first_item = False
         
         if section.verses:
-            list_text += f"{num}. {text}\\textsuperscript{{{footnote_counter}}}"
+            list_text += f"{num}. {text} [{footnote_counter}]"
             list_footnotes.append(Footnote(footnote_counter, section.verses))
             footnote_counter += 1
         else:
