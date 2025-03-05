@@ -123,7 +123,7 @@ def format_regular_sections(sections: List[Section]) -> Tuple[str, List[Footnote
             continue
             
         if section.verses:
-            full_text += f"{section.text}$^{{{footnote_counter}}}$ "
+            full_text += f"{section.text}\\textsuperscript{{{footnote_counter}}} "
             footnotes.append(Footnote(footnote_counter, section.verses))
             footnote_counter += 1
         else:
