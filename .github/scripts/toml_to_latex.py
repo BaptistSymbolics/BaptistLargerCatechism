@@ -71,72 +71,89 @@ def process_files(file_paths: List[str]) -> Dict[str, Question]:
     return sort_questions(all_questions)
 
 
+def generate_latex_preamble() -> str:
+    """Generate the LaTeX preamble with document class and package imports."""
+    preamble = "\\documentclass[12pt,article]{article}\n"
+    
+    # Base packages
+    preamble += "\\usepackage{geometry}\n"
+    preamble += "\\geometry{margin=1in}\n"
+    preamble += "\\usepackage{titlesec}\n"
+    preamble += "\\usepackage{xcolor}\n"
+    preamble += "\\usepackage{fancyhdr}\n"
+    preamble += "\\usepackage{fontspec}\n"
+    preamble += "\\setmainfont[Path=./fonts/,UprightFont=EBGaramond12-Regular.otf,ItalicFont=EBGaramond12-Italic.otf]{EB Garamond}\n"
+    preamble += "\\usepackage{setspace}\n"
+    preamble += "\\onehalfspacing\n"
+    preamble += "\\usepackage{mdframed}\n"
+    preamble += "\\usepackage{multicol}\n"
+    preamble += "\\usepackage{enumitem}\n"
+    preamble += "\\usepackage{bookmark}\n"  # For better PDF bookmarks
+    
+    # TOC formatting - load before hyperref
+    preamble += "\\usepackage{tocloft}\n"
+    preamble += "\\setlength{\\cftbeforesecskip}{10pt}\n"
+    preamble += "\\renewcommand{\\cftsecfont}{\\bfseries}\n"
+    
+    # Hyperref should be loaded last to avoid conflicts
+    preamble += "\\usepackage{hyperref}\n"
+    preamble += "\\hypersetup{\n"
+    preamble += "  colorlinks=true,\n"
+    preamble += "  linkcolor=blue,\n"
+    preamble += "  urlcolor=blue,\n"
+    preamble += "  citecolor=blue,\n"
+    preamble += "  linktoc=all,\n"
+    preamble += "  bookmarksnumbered=true,\n"
+    preamble += "  bookmarksopen=true\n"
+    preamble += "}\n"
+    
+    # Remove section numbering
+    preamble += "\\setcounter{secnumdepth}{0}\n"
+    
+    # Format section headings
+    preamble += "\\titleformat{\\section}{\\LARGE\\bfseries\\color[RGB]{231, 76, 60}}{\\thesection}{1em}{}\n"
+    preamble += "\\titleformat{\\subsection}{\\Large\\bfseries\\color{black}}{\\thesubsection}{1em}{}\n"
+    
+    # Setup page headers and footers
+    preamble += "\\pagestyle{fancy}\n"
+    preamble += "\\fancyhead[R]{The Baptist Larger Catechism}\n"
+    preamble += "\\fancyhead[L]{\\thepage}\n"
+    preamble += "\\fancyfoot{}\n"
+    
+    return preamble
+
+
+def generate_latex_document_start() -> str:
+    """Generate the LaTeX document start with title and TOC."""
+    content = "\\begin{document}\n\n"
+    content += "\\title{The Baptist Larger Catechism}\n"
+    content += "\\maketitle\n"
+    content += "\\tableofcontents\n"
+    content += "\\newpage\n\n"
+    return content
+
+
+def generate_latex_document_end() -> str:
+    """Generate the LaTeX document end."""
+    return "\\end{document}\n"
+
+
 def generate_latex(questions: Dict[str, Question], template_path: Optional[str] = None) -> str:
-    """Generate complete LaTeX content from questions.
-    
-    Args:
-        questions: Dictionary of Question objects with IDs as keys
-        template_path: Optional path to a LaTeX template file
-    
-    Returns:
-        Complete LaTeX document as a string
-    """
-    # Start with document class and preamble
-    latex = "\\documentclass[12pt,article]{article}\n"
-    latex += "\\usepackage{geometry}\n"
-    latex += "\\geometry{margin=1in}\n"
-    latex += "\\usepackage{hyperref}\n"
-    latex += "\\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue}\n"
-    latex += "\\usepackage{titlesec}\n"
-    latex += "\\usepackage{xcolor}\n"
-    latex += "\\usepackage{fancyhdr}\n"
-    latex += "\\usepackage{fontspec}\n"
-    latex += "\\setmainfont[Path=./fonts/,UprightFont=EBGaramond12-Regular.otf,ItalicFont=EBGaramond12-Italic.otf]{EB Garamond}\n"
-    latex += "\\usepackage{setspace}\n"
-    latex += "\\onehalfspacing\n"
-    latex += "\\usepackage{mdframed}\n"
-    latex += "\\usepackage{multicol}\n"
-    latex += "\\usepackage{enumitem}\n\n"
-    
-    # Define custom environments and formatting
-    latex += "% Remove section numbering\n"
-    latex += "\\setcounter{secnumdepth}{0}\n\n"
-    
-    latex += "% Format section headings (questions)\n"
-    latex += "\\titleformat{\\section}{\\LARGE\\bfseries\\color[RGB]{231, 76, 60}}{\\thesection}{1em}{}\n"
-    latex += "\\titleformat{\\subsection}{\\Large\\bfseries\\color{black}}{\\thesubsection}{1em}{}\n\n"
-    
-    latex += "% Setup page headers and footers\n"
-    latex += "\\pagestyle{fancy}\n"
-    latex += "\\fancyhead[R]{The Baptist Larger Catechism}\n"
-    latex += "\\fancyhead[L]{\\thepage}\n"
-    latex += "\\fancyfoot{}\n\n"
-    
-    # Begin document
-    latex += "\\begin{document}\n\n"
-    latex += "\\title{The Baptist Larger Catechism}\n"
-    latex += "\\maketitle\n"
-    latex += "\\tableofcontents\n"
-    latex += "\\newpage\n\n"
+    """Generate complete LaTeX content from questions."""
+    # Generate the document structure
+    latex = generate_latex_preamble()
+    latex += generate_latex_document_start()
     
     # Process each question
     for q_id, question in sorted(questions.items(), key=lambda x: float(x[0]) if x[0].replace('.', '', 1).isdigit() else x[0]):
-        # Process question
         q_latex = process_question(question)
-        
-        # Process answer
         a_latex, footnotes = process_answer(question)
-        
-        # Process footnotes
         f_latex = process_footnotes(footnotes)
         
-        # Combine into a complete question section
         section_latex = f"{q_latex}\n\n{a_latex}\n\n{f_latex}\n\n\\hrulefill\n\n"
         latex += section_latex
     
-    # End document
-    latex += "\\end{document}\n"
-    
+    latex += generate_latex_document_end()
     return latex
 
 
