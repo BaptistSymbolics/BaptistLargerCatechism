@@ -14,6 +14,11 @@
 ]{EB Garamond}
 \usepackage{setspace}
 \onehalfspacing
+\usepackage{mdframed}
+\usepackage{multicol}
+\usepackage{fixltx2e}  % Provides \textsubscript and improves \textsuperscript
+\usepackage{enumitem}
+
 
 % Define \tightlist command used by pandoc
 \providecommand{\tightlist}{%
@@ -31,6 +36,28 @@
 \fancyhead[R]{The Baptist Larger Catechism}
 \fancyhead[L]{\thepage}
 \fancyfoot{}
+
+% Define custom environments for catechism elements
+\newenvironment{catechismQuestion}{%
+  \begin{spacing}{1.0}%
+  \color[RGB]{231, 76, 60}%
+  \Large\bfseries%
+}{%
+  \end{spacing}%
+}
+
+\newenvironment{catechismAnswer}{%
+  \begin{spacing}{1.2}%
+  \normalsize%
+  % Enable proper list environments inside catechismAnswer
+  \let\origitem\item
+  \let\item\normalitem
+}{%
+  \end{spacing}%
+}
+
+% Standard TOC settings (no tocloft package)
+\setcounter{tocdepth}{1}
 
 \begin{document}
 
