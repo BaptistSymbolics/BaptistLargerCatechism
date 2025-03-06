@@ -2,6 +2,8 @@ name: TOML to LaTeX and PDF
 
 on:
   push:
+    branches:
+      - feature/python_enumerated_lists  # Add the specific branch
     paths:
       - 'src/*.toml'
   workflow_dispatch:  # Allow manual triggering
