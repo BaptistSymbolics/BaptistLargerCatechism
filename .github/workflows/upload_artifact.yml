@@ -1,0 +1,21 @@
+name: Upload PDF Artifact
+
+on:
+  push:
+    paths:
+      - 'final/*.pdf'
+  workflow_dispatch:
+
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: larger-catechism-pdf
+          path: final/larger-catechism.pdf
