@@ -36,7 +36,8 @@ jobs:
         
       - name: Install LaTeX packages
         run: |
-          tlmgr install xcolor titlesec fancyhdr fontspec setspace mdframed tools enumitem tocloft bookmark hyperref
+          tlmgr update --self
+          tlmgr install xcolor titlesec fancyhdr fontspec setspace mdframed tools enumitem tocloft bookmark hyperref zref needspace
           tlmgr path add
       
       - name: Convert LaTeX to PDF (2 passes)
