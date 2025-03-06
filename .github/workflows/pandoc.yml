@@ -1,4 +1,4 @@
-name: TOML to Markdown and PDF
+name: TOML to LaTeX and PDF
 
 on:
   push:
@@ -24,30 +24,26 @@ jobs:
           python -m pip install --upgrade pip
           pip install toml
       
-      - name: Convert TOML to Markdown
-        run: python .github/scripts/toml_to_markdown.py
+      - name: Create output directory
+        run: mkdir -p dist
       
-      - name: Convert Markdown to PDF
-        uses: docker://pandoc/extra:3.6
-        with:
-          args: >-
-            --standalone
-            --template=templates/letter-pdf.tex
-            --from=markdown
-            --to=pdf
-            --pdf-engine=xelatex
-            --lua-filter=./.github/scripts/catechism-filter.lua
-            --output=larger-catechism.pdf
-            larger-catechism.md
+      - name: Convert TOML to LaTeX
+        run: python .github/scripts/toml_to_latex.py -s src -o dist/larger-catechism.tex
       
-      - name: Upload Markdown artifact
-        uses: actions/upload-artifact@v4
+      - name: Convert LaTeX to PDF
+        uses: docker://texlive/texlive:latest
         with:
-          name: larger-catechism-markdown
-          path: larger-catechism.md
+          entrypoint: sh
+          args: -c "cd /github/workspace && xelatex -interaction=nonstopmode -output-directory=dist dist/larger-catechism.tex"
+      
+      - name: Run xelatex again for references
+        uses: docker://texlive/texlive:latest
+        with:
+          entrypoint: sh
+          args: -c "cd /github/workspace && xelatex -interaction=nonstopmode -output-directory=dist dist/larger-catechism.tex"
       
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v4
         with:
           name: larger-catechism-pdf
-          path: larger-catechism.pdf
+          path: dist/larger-catechism.pdf

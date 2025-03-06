@@ -15,9 +15,10 @@
 \usepackage{setspace}
 \onehalfspacing
 \usepackage{mdframed}
-\usepackage{fixltx2e}
 \usepackage{multicol}
-\usepackage{tocloft}
+\usepackage{fixltx2e}  % Provides \textsubscript and improves \textsuperscript
+\usepackage{enumitem}
+
 
 % Define \tightlist command used by pandoc
 \providecommand{\tightlist}{%
@@ -25,7 +26,6 @@
 
 % Remove section numbering
 \setcounter{secnumdepth}{0}
-\setcounter{tocdepth}{1}  % Show only section-level entries in TOC
 
 % Format section headings (questions)
 \titleformat{\section}{\LARGE\bfseries\color[RGB]{231, 76, 60}}{\thesection}{1em}{}
@@ -49,24 +49,15 @@
 \newenvironment{catechismAnswer}{%
   \begin{spacing}{1.2}%
   \normalsize%
+  % Enable proper list environments inside catechismAnswer
+  \let\origitem\item
+  \let\item\normalitem
 }{%
   \end{spacing}%
 }
 
-% Define custom environment for scripture references with columns
-\newenvironment{scriptureReferences}[1]{%
-  \vspace{1em}%
-  \begin{mdframed}[linecolor=blue!20,backgroundcolor=blue!5,linewidth=1pt,skipabove=10pt,skipbelow=10pt]%
-  \begin{multicols}{#1}%
-  \begin{spacing}{1.0}%
-  \footnotesize\color[RGB]{0, 0, 150}%
-  \setlength{\parskip}{0.5em}%
-}{%
-  \end{spacing}%
-  \end{multicols}%
-  \end{mdframed}%
-  \vspace{1em}%
-}
+% Standard TOC settings (no tocloft package)
+\setcounter{tocdepth}{1}
 
 \begin{document}
 
