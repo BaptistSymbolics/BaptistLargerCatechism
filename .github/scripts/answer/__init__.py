@@ -15,6 +15,16 @@ from shared.utils import (
 )
 
 
+def detect_hierarchical_answer(sections: List[Section]) -> bool:
+    """Detect if the answer has a hierarchical structure with numbered main sections."""
+    # Look for sections that start with patterns like "1. From" or "2. From"
+    hierarchical_pattern = re.compile(r'^\d+\.\s+From\s+')
+    
+    # Check if there are multiple (3+) sections matching this pattern
+    hierarchical_sections = [s for s in sections if s.text and hierarchical_pattern.match(s.text)]
+    return len(hierarchical_sections) >= 3
+
+
 def process_answer(question: Question) -> Tuple[str, List[Footnote]]:
     """Process a question's answer into LaTeX format.
     
@@ -24,9 +34,13 @@ def process_answer(question: Question) -> Tuple[str, List[Footnote]]:
     Returns:
         Tuple of (LaTeX representation of the answer, List of footnotes)
     """
-    # Check if the answer contains list items
-    if detect_list_sections(question.sections):
+    # First check if this is a hierarchical answer
+    if detect_hierarchical_answer(question.sections):
+        return process_hierarchical_answer(question.sections)
+    # Then check if it's a regular list
+    elif detect_list_sections(question.sections):
         return process_list_answer(question.sections)
+    # Otherwise process as regular text
     else:
         return process_regular_answer(question.sections)
 
@@ -62,6 +76,88 @@ def process_regular_answer(sections: List[Section]) -> Tuple[str, List[Footnote]
             footnote_counter += 1
         else:
             latex += f"{escaped_text} "
+    
+    return latex.strip(), footnotes
+
+
+def process_hierarchical_answer(sections: List[Section]) -> Tuple[str, List[Footnote]]:
+    """Process an answer with hierarchical numbered sections."""
+    latex = "A: "
+    footnotes = []
+    footnote_counter = 1
+    
+    # Track the current section number
+    current_section = None
+    section_started = False
+    
+    # First pass: determine where each numbered section begins
+    section_indices = {}
+    for i, section in enumerate(sections):
+        if not section.text:
+            continue
+            
+        match = re.match(r'^(\d+)\.\s+From\s+(.*)', section.text)
+        if match:
+            section_num = int(match.group(1))
+            section_indices[section_num] = i
+    
+    # Find the first "Sins become more harmful:" text
+    intro_text = None
+    for i, section in enumerate(sections):
+        if not section.text:
+            continue
+            
+        if "Sins become more harmful:" in section.text:
+            intro_text = section.text.split("Sins become more harmful:")[0] + "Sins become more harmful:"
+            # Remove this part from the section text to avoid duplication
+            sections[i].text = section.text.replace(intro_text, "").strip()
+            break
+    
+    # Start with the intro
+    if intro_text:
+        latex += f"{intro_text}\n\n"
+    
+    # Process each section with proper formatting and spacing
+    last_section_num = 0
+    
+    for i, section in enumerate(sections):
+        if not section.text:
+            continue
+        
+        # Check if this is a new section
+        section_match = re.match(r'^(\d+)\.\s+From\s+(.*)', section.text)
+        if section_match:
+            section_num = int(section_match.group(1))
+            section_text = section_match.group(2)
+            
+            # Add proper formatting and spacing
+            latex += f"{section_num}. {section_text}"
+            last_section_num = section_num
+        else:
+            # Regular text
+            escaped_text = escape_latex(section.text)
+            if escaped_text:
+                latex += f"{escaped_text}"
+        
+        # Add footnote if present
+        if section.verses:
+            latex += f"$^{{{footnote_counter}}}$ "
+            footnotes.append(Footnote(number=footnote_counter, verses=section.verses))
+            footnote_counter += 1
+        else:
+            latex += " "
+        
+        # Check if next section is a new numbered section
+        new_section_coming = False
+        for j in range(i+1, len(sections)):
+            if sections[j].text and re.match(r'^(\d+)\.\s+From\s+(.*)', sections[j].text):
+                new_section_coming = True
+                break
+            elif sections[j].text:
+                break
+        
+        if new_section_coming:
+            latex += "\n\n"
     
     return latex.strip(), footnotes
 
