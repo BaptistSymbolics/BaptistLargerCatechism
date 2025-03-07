@@ -1,7 +1,10 @@
 id = "140"
 question = "What sins are more heinous because of the harm that results from them?"
 [[sections]]
-text = "Sins become more harmful: 1. From those who commit the sins:"
+text = "Sins become more harmful:"
+verses = ""
+[[sections]]
+text = "1. From those who commit the sins:"
 verses = "Jeremiah 2:8"
 [[sections]]
 text = "if they are older,"

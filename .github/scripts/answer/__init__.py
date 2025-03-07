@@ -81,63 +81,41 @@ def process_regular_answer(sections: List[Section]) -> Tuple[str, List[Footnote]
 
 
 def process_hierarchical_answer(sections: List[Section]) -> Tuple[str, List[Footnote]]:
-    """Process an answer with hierarchical numbered sections."""
+    """Process an answer with hierarchical numbered sections.
+    
+    Args:
+        sections: List of Section objects
+        
+    Returns:
+        Tuple of (LaTeX representation of the answer, List of footnotes)
+    """
     latex = "A: "
     footnotes = []
     footnote_counter = 1
     
-    # Track the current section number
-    current_section = None
-    section_started = False
-    
-    # First pass: determine where each numbered section begins
-    section_indices = {}
-    for i, section in enumerate(sections):
-        if not section.text:
-            continue
-            
-        match = re.match(r'^(\d+)\.\s+From\s+(.*)', section.text)
-        if match:
-            section_num = int(match.group(1))
-            section_indices[section_num] = i
-    
-    # Find the first "Sins become more harmful:" text
-    intro_text = None
-    for i, section in enumerate(sections):
-        if not section.text:
-            continue
-            
-        if "Sins become more harmful:" in section.text:
-            intro_text = section.text.split("Sins become more harmful:")[0] + "Sins become more harmful:"
-            # Remove this part from the section text to avoid duplication
-            sections[i].text = section.text.replace(intro_text, "").strip()
-            break
-    
-    # Start with the intro
-    if intro_text:
-        latex += f"{intro_text}\n\n"
-    
-    # Process each section with proper formatting and spacing
-    last_section_num = 0
+    # Track if we're in a numbered section
+    in_numbered_section = False
     
     for i, section in enumerate(sections):
         if not section.text:
             continue
         
-        # Check if this is a new section
-        section_match = re.match(r'^(\d+)\.\s+From\s+(.*)', section.text)
+        # Check if this is a main section header
+        section_match = re.match(r'^(\d+)\.\s+(.*)', section.text)
+        
+        # Escape special LaTeX characters
+        escaped_text = escape_latex(section.text)
+        
         if section_match:
-            section_num = int(section_match.group(1))
-            section_text = section_match.group(2)
+            # This starts a new numbered section
+            in_numbered_section = True
             
-            # Add proper formatting and spacing
-            latex += f"{section_num}. {section_text}"
-            last_section_num = section_num
-        else:
-            # Regular text
-            escaped_text = escape_latex(section.text)
-            if escaped_text:
-                latex += f"{escaped_text}"
+            # Add a blank line before each numbered section (except the first one)
+            if i > 0 and latex.strip():
+                latex += "\n\n"
+        
+        # Add the section text
+        latex += escaped_text
         
         # Add footnote if present
         if section.verses:
@@ -146,18 +124,6 @@ def process_hierarchical_answer(sections: List[Section]) -> Tuple[str, List[Foot
             footnote_counter += 1
         else:
             latex += " "
-        
-        # Check if next section is a new numbered section
-        new_section_coming = False
-        for j in range(i+1, len(sections)):
-            if sections[j].text and re.match(r'^(\d+)\.\s+From\s+(.*)', sections[j].text):
-                new_section_coming = True
-                break
-            elif sections[j].text:
-                break
-        
-        if new_section_coming:
-            latex += "\n\n"
     
     return latex.strip(), footnotes
 
