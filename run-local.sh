@@ -2,7 +2,7 @@
 mkdir -p dist
 
 # Run the new Python script to generate LaTeX directly
-python .github/scripts/toml_to_latex.py -s src -o dist/larger-catechism.tex
+python scripts/toml_to_latex.py -s src -o dist/larger-catechism.tex
 
 # First run of xelatex to generate initial PDF and auxiliary files
 docker run --rm --volume "$(pwd):/data" --workdir /data texlive/texlive:latest \
