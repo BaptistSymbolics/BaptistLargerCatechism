@@ -25,13 +25,10 @@ def process_footnotes(footnotes: List[Footnote]) -> str:
     latex += "\\begin{multicols}{2}\n"
     latex += "\\footnotesize\\color[RGB]{0, 0, 150}\n"
     
-    # Process each footnote
+    # Process each footnote with proper line breaks
     for footnote in footnotes:
-        # Escape special LaTeX characters in verses
         escaped_verses = escape_latex(footnote.verses)
-        
-        # Format as a superscript reference with a hyperlink
-        latex += f"$^{{{footnote.number}}}$ \\href{{{footnote.url}}}{{{escaped_verses}}}\n\n"
+        latex += f"$^{{{footnote.number}}}$ \\href{{{footnote.url}}}{{{escaped_verses}}}\\\\\n"
     
     # Close the environments
     latex += "\\end{multicols}\n"
