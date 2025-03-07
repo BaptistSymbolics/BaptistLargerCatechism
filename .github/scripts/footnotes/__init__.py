@@ -9,14 +9,7 @@ from shared.utils import create_bible_url, escape_latex
 
 
 def process_footnotes(footnotes: List[Footnote]) -> str:
-    """Process footnotes into a LaTeX format.
-    
-    Args:
-        footnotes: List of Footnote objects
-        
-    Returns:
-        LaTeX representation of the footnotes
-    """
+    """Process footnotes into a LaTeX format."""
     if not footnotes:
         return ""
     
@@ -26,7 +19,7 @@ def process_footnotes(footnotes: List[Footnote]) -> str:
             footnote.url = create_bible_url(footnote.verses)
     
     # Create a framed box with columns for the references
-    latex = "\\begin{mdframed}[linecolor=blue!20,backgroundcolor=blue!5,linewidth=1pt]\n"
+    latex = "\\begin{mdframed}[linecolor=blue!20,backgroundcolor=blue!5,linewidth=1pt,skipabove=20pt,skipbelow=20pt,innertopmargin=0pt,innerbottommargin=15pt]\n"
     latex += "\\setlength{\\columnsep}{2em}\n"
     latex += "\\setlength{\\parindent}{0pt}\n"
     latex += "\\begin{multicols}{2}\n"

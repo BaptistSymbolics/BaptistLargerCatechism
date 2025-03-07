@@ -150,7 +150,8 @@ def generate_latex(questions: Dict[str, Question], template_path: Optional[str] 
         a_latex, footnotes = process_answer(question)
         f_latex = process_footnotes(footnotes)
         
-        section_latex = f"{q_latex}\n\n{a_latex}\n\n{f_latex}\n\n\\hrulefill\n\n"
+        # Combine into a complete question section with controlled spacing
+        section_latex = f"{q_latex}\n\n{a_latex}\n\n{f_latex}\n\n\\vspace{{10pt}}\\hrulefill\n\n"
         latex += section_latex
     
     latex += generate_latex_document_end()
