@@ -10,7 +10,7 @@ This project serves as a collaborative, open-source hub for maintaining and pres
 
 ## Background
 
-Originally hosted on Dr. Gabriel Williams' [The Road of Grace](http://theroadofgrace.wordpress.com/) (now archived), this project aims to continue the work of preserving and refining this theological resource. I originally collaborated (through the comments) on the creation of this project, although the bulk (99%) of the work goes to the original creator. If you know his or her name, please let me know, so I can add it to the README.
+Originally hosted on Dr. Gabriel Williams' [The Road of Grace](http://theroadofgrace.wordpress.com/) (now archived), this project aims to continue the work of preserving and refining this theological resource. I originally collaborated (through the comments) on the creation of this project, although the bulk (99%) of the work goes to the original creator.
 
 ### Project Motivation
 
